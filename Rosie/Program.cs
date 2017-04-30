@@ -14,13 +14,11 @@ namespace Rosie
 
         public async Task MainAsync()
         {
-            var client = new DiscordSocketClient();
-
-            client.Log += Logger;
+            _client.Log += Logger;
 
             string token = APIKeys.DiscordClientToken;
-            await client.LoginAsync(TokenType.Bot, token);
-            await client.StartAsync();
+            await _client.LoginAsync(TokenType.Bot, token);
+            await _client.StartAsync();
 
             // Block this task until the program is closed.
             await Task.Delay(-1);
