@@ -6,7 +6,7 @@ using Discord.WebSocket;
 
 namespace Rosie
 {
-	public class Program
+    public class Program
     {
         private readonly DiscordSocketClient _client;
 
