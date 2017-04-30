@@ -19,8 +19,6 @@ namespace Rosie
 
         public async Task MainAsync()
         {
-            _client.Log += Logger;
-
             await InitCommands();
 
             await _client.LoginAsync(TokenType.Bot, _token);
@@ -35,6 +33,7 @@ namespace Rosie
             _client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Info,
+                MessageCacheSize = 1000
             });
 
             _token = APIKeys.DiscordClientToken;
@@ -44,6 +43,10 @@ namespace Rosie
 
         public async Task InitCommands()
         {
+            _client.Log += Logger;
+            _client.MessageDeleted += MessageDeleted;
+            _client.MessageUpdated += MessageUpdated;
+
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
         }
 
@@ -52,6 +55,20 @@ namespace Rosie
             Console.WriteLine(msg.ToString());
             return Task.CompletedTask;
         }
+
+        private async Task MessageUpdated(Cacheable<IMessage, ulong> before, SocketMessage after, ISocketMessageChannel channel)
+        {
+            var message = await before.GetOrDownloadAsync();
+            Console.WriteLine($"{message} -> {after}");
+        }
+
+        private async Task MessageDeleted(Cacheable<IMessage, ulong> before, ISocketMessageChannel channel)
+        {
+            var message = await before.GetOrDownloadAsync();
+            await channel.SendMessageAsync($"Someone deleted \"{message}\" in {channel}");
+            Console.WriteLine($"Someone deleted \"{message}\" in {channel}");
+        }
+
     }
 
 }
