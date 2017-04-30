@@ -8,13 +8,15 @@ namespace Rosie
 {
 	public class Program
     {
+        private readonly DiscordSocketClient _client;
+
         public static void Main(string[] args) => new Program().MainAsync().GetAwaiter().GetResult();
 
         public async Task MainAsync()
         {
             var client = new DiscordSocketClient();
 
-            client.Log += Log;
+            client.Log += Logger;
 
             string token = APIKeys.DiscordClientToken;
             await client.LoginAsync(TokenType.Bot, token);
@@ -24,7 +26,15 @@ namespace Rosie
             await Task.Delay(-1);
         }
 
-        private Task Log(LogMessage msg)
+        private Program()
+        {
+            _client = new DiscordSocketClient(new DiscordSocketConfig
+            {
+                LogLevel = LogSeverity.Info,
+            });
+        }
+
+        private Task Logger(LogMessage msg)
         {
             Console.WriteLine(msg.ToString());
             return Task.CompletedTask;
